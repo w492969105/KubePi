@@ -32,7 +32,30 @@ export function deleteJob(cluster_name, job) {
   const deleteOptions = {
     propagationPolicy: 'Background'
   };
-  return del(`${jobUrl(cluster_name)}/${job}`, { data: deleteOptions });
+
+  console.log('deleteJob function called with:');
+  console.log('cluster_name:', cluster_name);
+  console.log('job:', job);
+  console.log('deleteOptions:', deleteOptions);
+
+  const url = `${jobUrl(cluster_name)}/${job}`;
+  console.log('Constructed URL:', url);
+
+  console.log('Calling del function with:');
+  console.log('URL:', url);
+  console.log('Data:', { data: deleteOptions });
+
+  const result = del(url, { data: deleteOptions });
+
+  console.log('del function returned:', result);
+
+  // 由于 result 可能是一个 Promise，我们可以添加一些额外的日志
+  result.then(
+    response => console.log('Delete job succeeded:', response),
+    error => console.error('Delete job failed:', error)
+  );
+
+  return result;
 }
 
 export function createJob(cluster_name, job) {

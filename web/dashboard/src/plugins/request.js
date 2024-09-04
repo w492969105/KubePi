@@ -48,20 +48,35 @@ instance.interceptors.request.use(
         }
         config.url = url
 
-        // 特殊处理带 data 的 DELETE 请求
-        if (config.method.toLowerCase() === 'delete' && config.data && Object.keys(config.data).length > 0) {
-            // 将 data 转换为 URL 参数
+        // 特殊处理 DELETE 请求
+        if (config.method.toLowerCase() === 'delete') {
+            // 确保 params 存在
             config.params = config.params || {};
-            Object.assign(config.params, config.data);
-            // 保留原始 data，以防某些情况下后端仍然需要请求体
-            // 如果确定后端不会处理 DELETE 请求的请求体，可以取消下面这行的注释
-            // config.data = undefined;
+            
+            // 如果存在 data，将其合并到 params
+            if (config.data && typeof config.data === 'object' && Object.keys(config.data).length > 0) {
+                Object.assign(config.params, config.data);
+            }
+            
+            // 构建查询字符串
+            const queryString = Object.keys(config.params)
+                .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(config.params[key])}`)
+                .join('&');
+            
+            // 只有在有参数时才附加查询字符串
+            if (queryString) {
+                config.url += (config.url.includes('?') ? '&' : '?') + queryString;
+            }
+            
+            // 清除 params 和 data，因为我们已经将它们添加到 URL 中
+            config.params = {};
+            config.data = null;
         }
 
-        return config
+        return config;
     },
     error => {
-        return Promise.reject(error)
+        return Promise.reject(error);
     }
 )
 
@@ -133,18 +148,11 @@ export const put = (url, data, loading) => {
     return promise(request({url: url, method: "put", data}), loading)
 }
 
-/**
- * 发送 DELETE 请求
- * @param {string} url - 请求的 URL
- * @param {Object} [options={}] - 请求选项，可以包含 data 属性用于发送请求体
- * @param {Object} [loading] - 加载状态对象
- * @returns {Promise}
- */
-export const del = (url, options = {}, loading) => {
+export const del = (url, data, loading) => {
     return promise(request({
         url: url,
         method: "delete",
-        data: options.data
+        data: data
     }), loading)
 }
 
