@@ -29,7 +29,10 @@ export function getJobByName(cluster_name, namespace, job) {
 }
 
 export function deleteJob(cluster_name, job) {
-  return del(`${jobUrl(cluster_name)}/${job}`);
+  const deleteOptions = {
+    propagationPolicy: 'Background'
+  };
+  return del(`${jobUrl(cluster_name)}/${job}`, { data: deleteOptions });
 }
 
 export function createJob(cluster_name, job) {

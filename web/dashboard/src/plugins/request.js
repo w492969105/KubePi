@@ -122,8 +122,19 @@ export const put = (url, data, loading) => {
     return promise(request({url: url, method: "put", data}), loading)
 }
 
-export const del = (url, loading) => {
-    return promise(request({url: url, method: "delete"}), loading)
+/**
+ * 发送 DELETE 请求
+ * @param {string} url - 请求的 URL
+ * @param {Object} [options={}] - 请求选项，可以包含 data 属性用于发送请求体
+ * @param {Object} [loading] - 加载状态对象
+ * @returns {Promise}
+ */
+export const del = (url, options = {}, loading) => {
+    return promise(request({
+        url: url,
+        method: "delete",
+        data: options.data
+    }), loading)
 }
 
 export const postFile= (url,data, params,loading) => {
