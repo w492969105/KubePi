@@ -47,6 +47,17 @@ instance.interceptors.request.use(
             config.params = {}
         }
         config.url = url
+
+        // 特殊处理带 data 的 DELETE 请求
+        if (config.method.toLowerCase() === 'delete' && config.data && Object.keys(config.data).length > 0) {
+            // 将 data 转换为 URL 参数
+            config.params = config.params || {};
+            Object.assign(config.params, config.data);
+            // 保留原始 data，以防某些情况下后端仍然需要请求体
+            // 如果确定后端不会处理 DELETE 请求的请求体，可以取消下面这行的注释
+            // config.data = undefined;
+        }
+
         return config
     },
     error => {
