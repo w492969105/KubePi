@@ -47,36 +47,10 @@ instance.interceptors.request.use(
             config.params = {}
         }
         config.url = url
-
-        // 特殊处理 DELETE 请求
-        if (config.method.toLowerCase() === 'delete') {
-            // 确保 params 存在
-            config.params = config.params || {};
-            
-            // 如果存在 data，将其合并到 params
-            if (config.data && typeof config.data === 'object' && Object.keys(config.data).length > 0) {
-                Object.assign(config.params, config.data);
-            }
-            
-            // 构建查询字符串
-            const queryString = Object.keys(config.params)
-                .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(config.params[key])}`)
-                .join('&');
-            
-            // 只有在有参数时才附加查询字符串
-            if (queryString) {
-                config.url += (config.url.includes('?') ? '&' : '?') + queryString;
-            }
-            
-            // 清除 params 和 data，因为我们已经将它们添加到 URL 中
-            config.params = {};
-            config.data = null;
-        }
-
-        return config;
+        return config
     },
     error => {
-        return Promise.reject(error);
+        return Promise.reject(error)
     }
 )
 
@@ -148,7 +122,7 @@ export const put = (url, data, loading) => {
     return promise(request({url: url, method: "put", data}), loading)
 }
 
-export const del = (url, data, loading) => {
+export const del = (url, data = undefined, loading) => {
     return promise(request({
         url: url,
         method: "delete",

@@ -84,22 +84,29 @@ export function getWorkLoadByName (cluster_name, type, namespace, name) {
 }
 
 export function deleteWorkLoad (cluster_name, type, namespace, name) {
+  const deleteOptions = {
+    propagationPolicy: "Background"
+  };
+  
+  let url;
   switch (type) {
     case "deployments":
     case "statefulsets":
     case "daemonsets":
-      return del(
-        `${appsV1UrlWithNsUrl(cluster_name, type, namespace)}/${name}`
-      )
+      url = `${appsV1UrlWithNsUrl(cluster_name, type, namespace)}/${name}`;
+      break;
     case "cronjobs":
-      return del(
-        `${batchV1beta1WithNsUrl(cluster_name, type, namespace)}/${name}`
-      )
+      url = `${batchV1beta1WithNsUrl(cluster_name, type, namespace)}/${name}`;
+      break;
     case "pods":
-      return del(`${apiV1UrlWithNsUrl(cluster_name, type, namespace)}/${name}`)
+      url = `${apiV1UrlWithNsUrl(cluster_name, type, namespace)}/${name}`;
+      break;
     case "jobs":
-      return del(`${batchV1WithNsUrl(cluster_name, type, namespace)}/${name}`)
+      url = `${batchV1WithNsUrl(cluster_name, type, namespace)}/${name}`;
+      break;
   }
+  
+  return del(url, deleteOptions);
 }
 
 export function createWorkLoad (cluster_name, type, namespace, data) {
